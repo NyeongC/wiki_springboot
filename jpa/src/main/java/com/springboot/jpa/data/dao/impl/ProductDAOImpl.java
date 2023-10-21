@@ -2,26 +2,68 @@ package com.springboot.jpa.data.dao.impl;
 
 import com.springboot.jpa.data.dao.ProductDAO;
 import com.springboot.jpa.data.entity.Product;
+import com.springboot.jpa.data.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+@Component
 public class ProductDAOImpl implements ProductDAO {
+
+    private final ProductRepository productRepository; // dao 에서 db 접근을 위해 프로덕트레포지토리 선언 후 생성자를 통해 의존성 주입
+
+    @Autowired
+    public ProductDAOImpl(ProductRepository productRepository){
+        this.productRepository = productRepository;
+    }
 
     @Override
     public Product insertProduct(Product product) {
-        return null;
+        Product savedProduct = productRepository.save(product);
+
+        return savedProduct;
     }
 
     @Override
     public Product selectProduct(Long number) {
-        return null;
+        Product selectedProduct = productRepository.getById(number);
+
+        return selectedProduct;
     }
 
     @Override
     public Product updateProductName(Long number, String name) throws Exception {
-        return null;
+        Optional<Product> selectedProduct = productRepository.findById(number);
+
+        Product updatedProduct;
+
+        if (selectedProduct.isPresent()){
+
+            Product product = selectedProduct.get();
+
+            product.setName(name);
+            product.setUpdatedAt(LocalDateTime.now());
+
+            updatedProduct = productRepository.save(product);
+
+        } else {
+            throw new Exception();
+        }
+        return updatedProduct;
     }
 
     @Override
     public void deleteProduct(Long number) throws Exception {
+        Optional<Product> selectedProduct = productRepository.findById(number);
 
+        if (selectedProduct.isPresent()) {
+            Product product = selectedProduct.get();
+
+            productRepository.delete(product);
+        } else {
+            throw new Exception();
+        }
     }
 }
