@@ -14,6 +14,8 @@ public class ProductResponseDto {
         this.price = price;
     }
 
+    public ProductResponseDto() {};
+
     public Long getNumber() {
         return number;
     }
